@@ -21,7 +21,7 @@ function cargo(print) {
 
 
 // Clear away old files, to prevent it affecting the benchmark
-run(false, "rimraf target/wasm-pack target/wasm-bindgen");
+run(true, "rimraf target/wasm-pack target/wasm-bindgen");
 
 console.log("Pre-compiling project...");
 
@@ -30,6 +30,7 @@ cargo(true);
 
 console.log("Project pre-compiled, now running benchmarks");
 console.log();
+
 
 // Baseline for comparison to wasm-bindgen
 time("- cargo build ", () => {
