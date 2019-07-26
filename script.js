@@ -1,8 +1,8 @@
 const { execSync } = require("child_process");
 
-function run(s) {
+function run(print, s) {
     execSync(s, {
-        stdio: "pipe",
+        stdio: (print ? "inherit" : "ignore"),
     });
 }
 
@@ -10,22 +10,38 @@ function time(name, f) {
     const current = process.hrtime();
     f();
     const diff = process.hrtime(current);
+    // Convert to ms
     const ms = (diff[0] * 1000) + (diff[1] * 0.000001);
     console.log(name + " : " + ms + " ms");
 }
 
-run("rimraf target/wasm-pack target/wasm-bindgen");
-run("cargo build --release --target wasm32-unknown-unknown --lib");
+function cargo(print) {
+    run(print, "cargo build --release --target wasm32-unknown-unknown --lib");
+}
 
+
+// Clear away old files, to prevent it affecting the benchmark
+run(false, "rimraf target/wasm-pack target/wasm-bindgen");
+
+console.log("Pre-compiling project...");
+
+// Pre-compile the project
+cargo(true);
+
+console.log("Project pre-compiled, now running benchmarks");
+console.log();
+
+// Baseline for comparison to wasm-bindgen
 time("- cargo build ", () => {
-    run("cargo build --release --target wasm32-unknown-unknown --lib");
+    cargo(false);
 });
 
 time("- wasm-pack   ", () => {
-    run("wasm-pack build --out-dir target/wasm-pack --no-typescript");
+    run(false, "wasm-pack build --out-dir target/wasm-pack --no-typescript");
 });
 
+// It has to run both cargo and wasm-bindgen, because that's what wasm-pack does
 time("- wasm-bindgen", () => {
-    run("cargo build --release --target wasm32-unknown-unknown --lib");
-    run("wasm-bindgen --out-dir target/wasm-bindgen  --no-typescript --target bundler target/wasm32-unknown-unknown/release/wasm_pack_perf_test.wasm");
+    cargo(false);
+    run(false, "wasm-bindgen --out-dir target/wasm-bindgen --no-typescript --target bundler target/wasm32-unknown-unknown/release/wasm_pack_perf_test.wasm");
 });
