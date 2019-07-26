@@ -1,0 +1,11 @@
+{
+  "author": "Pauan <pcxunlimited@gmail.com>",
+  "name": "wasm-pack-perf-test",
+  "version": "0.1.0",
+  "scripts": {
+    "time": "node script.js"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.3"
+  }
+}
