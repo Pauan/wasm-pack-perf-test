@@ -32,6 +32,29 @@ console.log("Project pre-compiled, now running benchmarks");
 console.log();
 
 
+time("- cargo metadata", () => {
+    run(false, "cargo metadata --format-version 1 --no-deps --manifest-path ./Cargo.toml");
+});
+
+time("- rustc sysroot", () => {
+    run(false, "rustc --print sysroot");
+});
+
+time("- rustc version", () => {
+    run(false, "rustc --version");
+});
+
+time("- wasm-bindgen version", () => {
+    run(false, "wasm-bindgen --version");
+});
+
+time("- wasm-pack version", () => {
+    run(false, "wasm-pack --version");
+});
+
+console.log();
+
+
 // Baseline for comparison to wasm-bindgen
 time("- cargo build ", () => {
     cargo(false);
